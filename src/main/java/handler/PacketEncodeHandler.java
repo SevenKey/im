@@ -7,6 +7,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
+/**
+ * @author weijianyu
+ */
 public class PacketEncodeHandler extends MessageToByteEncoder<Packet> {
 
     private final CommonDrive drive;

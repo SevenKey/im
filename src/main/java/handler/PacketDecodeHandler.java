@@ -8,6 +8,9 @@ import protocol.CommonDrive;
 
 import java.util.List;
 
+/**
+ * @author weijianyu
+ */
 public class PacketDecodeHandler extends ByteToMessageDecoder {
 
     private final CommonDrive drive;

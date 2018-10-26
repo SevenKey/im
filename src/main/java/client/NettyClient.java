@@ -1,9 +1,12 @@
 package client;
 
+import handler.PacketDecodeHandler;
+import handler.PacketEncodeHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.TimeUnit;
 
@@ -15,10 +18,19 @@ import java.util.concurrent.TimeUnit;
 public class NettyClient {
     private static final int MAX_COUNT = 5;
 
+    private final PacketDecodeHandler decodeHandler;
+    private final PacketEncodeHandler encodeHandler;
+
+    @Autowired
+    public NettyClient(PacketDecodeHandler decodeHandler, PacketEncodeHandler encodeHandler) {
+        this.decodeHandler = decodeHandler;
+        this.encodeHandler = encodeHandler;
+    }
+
     /**
      * netty client 启动
      */
-    public static void open() {
+    public void open() {
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         Bootstrap bootstrap = new Bootstrap();
@@ -28,7 +40,8 @@ public class NettyClient {
                 .handler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
-
+                        ch.pipeline().addLast(decodeHandler);
+                        ch.pipeline().addLast(encodeHandler);
                     }
                 });
         connectWithRetry(bootstrap, "127.0.0.1", 8000, MAX_COUNT);
@@ -42,7 +55,7 @@ public class NettyClient {
      * @param port      端口号
      * @param count     重试次数
      */
-    private static void connectWithRetry(Bootstrap bootstrap, String ip, int port, int count) {
+    private void connectWithRetry(Bootstrap bootstrap, String ip, int port, int count) {
         bootstrap.connect(ip, port).addListener(future -> {
             if (future.isSuccess()) {
                 System.out.println("netty client connect success ip:" + ip + " port:" + port);

@@ -11,9 +11,8 @@ public interface Drive {
     /**
      * @param byteBuf
      * @param packet
-     * @return
      */
-    byte[] encode(ByteBuf byteBuf, Packet packet);
+    void encode(ByteBuf byteBuf, Packet packet);
 
     /**
      * @param byteBuf
